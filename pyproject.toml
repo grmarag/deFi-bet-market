@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "defi-bet-market"
+version = "0.1.0"
+description = "A decentralized prediction market system built on Ethereum."
+authors = ["Grigorios Maragkakis <grigorios.maragkakis@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+fastapi = "^0.115.8"
+uvicorn = "^0.34.0"
+web3 = "^7.8.0"
+py-solc-x = "^2.0.3"
+eth-tester = "^0.12.1b1"
+pytest = "^8.3.4"
+py-evm = "^0.11.0b1"
+
+[poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

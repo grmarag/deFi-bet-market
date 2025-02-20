@@ -1,8 +1,8 @@
-# DeFi-AI-agent
+# DeFi-Bet-Market
 
 **Decentralized Prediction Market & AI-Enhanced Decision Engine on Ethereum**
 
-DeFi-AI-agent is an innovative platform that fuses decentralized finance (DeFi) with cutting-edge AI insights to power a trustless prediction market. Built on Ethereum, it enables users to bet on binary outcomes while leveraging advanced AI-driven analytics for smarter decision making.
+DeFi-Bet-Market is an innovative platform that fuses decentralized finance (DeFi) with advanced AI analytics to power a trustless prediction market. Built on Ethereum, it allows users to bet on binary outcomes while leveraging AI-driven insights to inform smarter decision-making.
 
 ---
 
@@ -10,70 +10,109 @@ DeFi-AI-agent is an innovative platform that fuses decentralized finance (DeFi) 
 
 - [Overview](#overview)
 - [Features](#features)
-- [Getting Started](#getting-started)
+- [Architecture & Project Structure](#architecture--project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
 - [Usage](#usage)
+  - [Running the API Server](#running-the-api-server)
+  - [Deploying the Smart Contract](#deploying-the-smart-contract)
+  - [Interacting with the Market](#interacting-with-the-market)
 - [Docker Deployment](#docker-deployment)
 - [Testing](#testing)
-- [Technologies](#technologies)
 - [Contributing](#contributing)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 ---
 
 ## Overview
 
-DeFi-AI-agent brings together the transparency of blockchain with the analytical power of AI to create a next-generation prediction market. Users can place bets on binary outcomes (yes/no) regarding various events, and the system aggregates these bets to form market insights. Additionally, integrated AI components help analyze trends and potentially enhance prediction accuracy.
-
-Whether you're a blockchain enthusiast or an AI aficionado, DeFi-AI-agent provides a robust example of modern decentralized application development using state‑of‑the‑art technologies.
+DeFi-Bet-Market integrates blockchain transparency with AI-powered analytics to create a next-generation decentralized prediction market. Users can place bets on yes/no outcomes regarding various events, while the system aggregates bets and uses AI components to enhance prediction accuracy. Whether you are a blockchain enthusiast or an AI aficionado, this project demonstrates modern decentralized application development using state‑of‑the‑art technologies.
 
 ---
 
 ## Features
 
-- **Blockchain-Powered:** Utilizes Ethereum smart contracts for secure, immutable transactions.
-- **Decentralized Prediction Market:** Users bet on outcomes, and the market aggregates collective wisdom.
-- **AI-Enhanced Insights:** Integrated AI components offer additional analysis to support decision making.
+- **Blockchain-Powered:** Secure and immutable transactions via Ethereum smart contracts.
+- **Decentralized Prediction Market:** Bet on binary outcomes with aggregated market insights.
+- **AI-Enhanced Decision Engine:** Leverage integrated AI for additional analysis and trend insights.
 - **Smart Contract Integration:** Solidity contracts ensure trustless and transparent execution.
-- **RESTful API:** A FastAPI-based API facilitates seamless interaction with the prediction market.
-- **Modern Development Stack:** Built with Python, Web3.py, and managed using Poetry.
-- **Containerized Deployment:** Dockerfile provided for easy containerization and deployment.
-- **Comprehensive Testing:** Automated tests with pytest ensure reliability and robustness.
+- **RESTful API:** FastAPI-based backend for seamless interaction.
+- **Modern Development Stack:** Developed with Python, Web3.py, and managed via Poetry.
+- **Containerized Deployment:** Docker configuration for simplified deployment.
+- **Automated Testing:** Comprehensive tests using pytest and EthereumTesterProvider.
 
 ---
 
-## Getting Started
+## Architecture & Project Structure
 
-### Prerequisites
+The project is structured to clearly separate concerns between the smart contracts, backend API, frontend interface, and testing framework.
 
-- **Python 3.9+**
+```
+deFi-bet-market/
+├── pyproject.toml               # Poetry configuration and dependency management
+├── README.md                    # Project documentation (this file)
+├── Dockerfile                   # Containerization instructions
+├── contracts/
+│   └── PredictionMarket.sol     # Solidity smart contract for prediction markets
+├── frontend/
+│   └── index.html               # Web-based interface for interacting with the market
+├── scripts/
+│   └── deploy.py                # CLI script to deploy smart contracts
+├── src/
+│   ├── __init__.py
+│   ├── api.py                   # FastAPI server exposing REST endpoints
+│   ├── config.py                # Configuration variables (e.g., Ethereum provider URL)
+│   └── market.py                # Python wrapper for smart contract interaction
+└── tests/
+    └── test_market.py           # Automated tests for contract functionality
+```
+
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Python 3.12** (or a compatible version between 3.12 and 4.0)
 - **Poetry** for dependency management ([Installation Guide](https://python-poetry.org/docs/))
-- **Ethereum Node Provider:** Use a local network (like Ganache) or a public testnet/mainnet.
+- **Ethereum Node Provider:**  
+  - **Ganache:** A personal blockchain for Ethereum development. Ganache is highly recommended for local testing and development.  
+  - Alternatively, use a local blockchain simulator (like Ganache CLI or Ganache UI) or connect to a public testnet/mainnet.
 - **Docker** (optional, for containerized deployment)
 
-### Installation
+---
 
-1. **Clone the Repository**
+## Installation
+
+1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/defi-ai-agent.git
-   cd defi-ai-agent
+   git clone https://github.com/yourusername/defi-bet-market.git
+   cd defi-bet-market
    ```
 
-2. **Install Dependencies**
+2. **Install Dependencies:**
 
    Use Poetry to install the required packages:
 
    ```bash
    poetry install
+   eval $(poetry env activate)
    ```
 
-3. **Configure Environment**
+---
 
-   Set your Ethereum provider URL (if different from the default):
+## Configuration
 
-   ```bash
-   export ETH_PROVIDER_URL="http://127.0.0.1:8545"
-   ```
+The project uses environment variables to configure the Ethereum provider. By default, it connects to a local node:
+
+```bash
+export ETH_PROVIDER_URL="http://127.0.0.1:7545"
+```
+
+If you're using **Ganache** (either via the CLI or UI), ensure it is running on the above URL. You can also update the URL to match your Ganache configuration if it differs.
 
 ---
 
@@ -87,7 +126,7 @@ Start the FastAPI server using Uvicorn:
 poetry run uvicorn src.api:app --reload
 ```
 
-Access the interactive API documentation by navigating to [http://localhost:8000/docs](http://localhost:8000/docs).
+Access the interactive API documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 
 ### Deploying the Smart Contract
 
@@ -97,75 +136,91 @@ Deploy the Prediction Market smart contract by running the deployment script:
 poetry run python scripts/deploy.py
 ```
 
-Follow the prompts to input your deployer address, private key, and market question.
+When prompted, provide:
+- **Deployer Address**
+- **Deployer Private Key**
+- **Market Question**
+
+**Note:** If you are developing locally, running Ganache will simulate a blockchain environment. Ensure Ganache is active on your specified ETH_PROVIDER_URL before deploying.
 
 ### Interacting with the Market
 
-Once deployed, you can interact with the following endpoints:
+Once deployed, you can interact with the market through the following endpoints:
 
-- **/deploy**: Deploy a new prediction market.
-- **/bet**: Place bets on the market.
-- **/close**: Close betting on the market.
-- **/resolve**: Resolve the market outcome.
-- **/withdraw**: Withdraw winnings post-resolution.
-- **/market**: Retrieve current market details.
+- **POST /api/deploy:** Deploy a new prediction market.
+- **POST /api/bet:** Place a bet on the market (provide vote and wager details).
+- **POST /api/close:** Close the market for further bets.
+- **POST /api/resolve:** Resolve the market outcome.
+- **POST /api/withdraw:** Withdraw winnings after market resolution.
+- **GET /api/market/{market_address}:** Retrieve details for a specific market.
+- **GET /api/markets:** List all deployed markets.
+
+The frontend interface available in `frontend/index.html` also allows you to deploy markets, place bets, and manage market actions with a user-friendly UI.
 
 ---
 
 ## Docker Deployment
 
-To run DeFi-AI-agent in a containerized environment, follow these steps:
+To run DeFi-Bet-Market in a containerized environment, follow these steps:
 
-1. **Build the Docker Image**
-
-   ```bash
-   docker build -t defi-ai-agent .
-   ```
-
-2. **Run the Docker Container**
+1. **Build the Docker Image:**
 
    ```bash
-   docker run -p 8000:8000 defi-ai-agent
+   docker build -t defi-bet-market .
    ```
 
-Your API will be available at [http://localhost:8000](http://localhost:8000).
+2. **Run the Docker Container:**
+
+If your Ganache RPC server is running on your host machine at http://127.0.0.1:7545, you can run the container and pass the updated ETH_PROVIDER_URL as follows:
+
+   ```bash
+   docker run -e ETH_PROVIDER_URL="http://host.docker.internal:7545" -p 8000:8000 defi-bet-market
+   ```
+
+Your API server will be accessible at [http://localhost:8000](http://localhost:8000).
 
 ---
 
 ## Testing
 
-Ensure everything is working correctly by running the automated tests:
+Automated tests are written using pytest and the EthereumTesterProvider to simulate blockchain interactions. To run the tests, execute:
 
 ```bash
 poetry run pytest
 ```
 
-The tests simulate blockchain interactions using EthereumTesterProvider, verifying that both the smart contract and the API function as expected.
-
----
-
-## Technologies
-
-- **Blockchain:** Ethereum, Solidity
-- **Backend:** Python, FastAPI, Uvicorn
-- **Smart Contract Interaction:** Web3.py, py-solc-x
-- **AI Components:** (Integrate your preferred AI/ML libraries as needed)
-- **Containerization:** Docker
-- **Testing:** Pytest, EthereumTesterProvider
-- **Dependency Management:** Poetry
+These tests verify that the smart contract functions correctly and that the API endpoints behave as expected. For local development, you can also use Ganache to manually test interactions before running the automated suite.
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and create a pull request with your enhancements. For major changes, open an issue first to discuss your proposed modifications.
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and ensure all tests pass.
+4. Submit a pull request with a clear description of your changes.
+
+For major modifications, consider opening an issue first to discuss your proposed changes.
+
+---
+
+## Roadmap
+
+- **Enhanced AI Analytics:** Integrate additional AI/ML libraries for deeper market insights.
+- **User Authentication:** Add secure user management and authentication.
+- **Improved UI/UX:** Refine the frontend interface for a smoother user experience.
+- **Extended Testing:** Increase test coverage for edge cases and contract security.
+
+Feel free to suggest additional features or improvements through issues or discussions.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Happy coding with **DeFi-AI-agent** – where decentralized finance meets intelligent decision-making!
+Happy coding with **DeFi-Bet-Market** – where decentralized finance meets intelligent decision-making!

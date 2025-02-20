@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DeFi-bet Market - Prediction Market</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>DeFi-bet Market - Prediction Market</h1>
+
+    <!-- Deploy Market Section -->
+    <section id="deploy-section" class="mb-5">
+      <h2>Deploy New Market</h2>
+      <form id="deploy-form">
+        <div class="form-group">
+          <label for="question">Market Question:</label>
+          <input type="text" class="form-control" id="question" required>
+        </div>
+        <div class="form-group">
+          <label for="deployer_address">Deployer Address:</label>
+          <input type="text" class="form-control" id="deployer_address" required>
+        </div>
+        <div class="form-group">
+          <label for="deployer_private_key">Deployer Private Key:</label>
+          <input type="text" class="form-control" id="deployer_private_key" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Deploy Market</button>
+      </form>
+      <div id="deploy-result" class="mt-3"></div>
+    </section>
+
+    <!-- List Markets Section -->
+    <section id="markets-section" class="mb-5">
+      <h2>Available Markets</h2>
+      <button id="refresh-markets" class="btn btn-secondary mb-3">Refresh List</button>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Contract Address</th>
+            <th>Question</th>
+            <th>Bets Open</th>
+            <th>Resolved</th>
+            <th>Total Yes</th>
+            <th>Total No</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="markets-table-body">
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Market Actions Section -->
+    <section id="market-actions" class="mb-5">
+      <h2>Market Actions</h2>
+      <form id="bet-form" class="mb-3">
+        <h4>Place Bet</h4>
+        <div class="form-group">
+          <label for="bet_market_address">Market Address:</label>
+          <input type="text" class="form-control" id="bet_market_address" required>
+        </div>
+        <div class="form-group">
+          <label for="vote">Vote (true for Yes, false for No):</label>
+          <input type="text" class="form-control" id="vote" required>
+        </div>
+        <div class="form-group">
+          <label for="amount_wei">Amount (in wei):</label>
+          <input type="number" class="form-control" id="amount_wei" required>
+        </div>
+        <div class="form-group">
+          <label for="voter_address">Voter Address:</label>
+          <input type="text" class="form-control" id="voter_address" required>
+        </div>
+        <div class="form-group">
+          <label for="voter_private_key">Voter Private Key:</label>
+          <input type="text" class="form-control" id="voter_private_key" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Place Bet</button>
+      </form>
+      
+      <form id="close-form" class="mb-3">
+        <h4>Close Bets</h4>
+        <div class="form-group">
+          <label for="close_market_address">Market Address:</label>
+          <input type="text" class="form-control" id="close_market_address" required>
+        </div>
+        <div class="form-group">
+          <label for="owner_address_close">Owner Address:</label>
+          <input type="text" class="form-control" id="owner_address_close" required>
+        </div>
+        <div class="form-group">
+          <label for="owner_private_key_close">Owner Private Key:</label>
+          <input type="text" class="form-control" id="owner_private_key_close" required>
+        </div>
+        <button type="submit" class="btn btn-warning">Close Bets</button>
+      </form>
+
+      <form id="resolve-form" class="mb-3">
+        <h4>Resolve Market</h4>
+        <div class="form-group">
+          <label for="resolve_market_address">Market Address:</label>
+          <input type="text" class="form-control" id="resolve_market_address" required>
+        </div>
+        <div class="form-group">
+          <label for="outcome">Outcome (true for Yes, false for No):</label>
+          <input type="text" class="form-control" id="outcome" required>
+        </div>
+        <div class="form-group">
+          <label for="owner_address_resolve">Owner Address:</label>
+          <input type="text" class="form-control" id="owner_address_resolve" required>
+        </div>
+        <div class="form-group">
+          <label for="owner_private_key_resolve">Owner Private Key:</label>
+          <input type="text" class="form-control" id="owner_private_key_resolve" required>
+        </div>
+        <button type="submit" class="btn btn-success">Resolve Market</button>
+      </form>
+
+      <form id="withdraw-form" class="mb-3">
+        <h4>Withdraw Winnings</h4>
+        <div class="form-group">
+          <label for="withdraw_market_address">Market Address:</label>
+          <input type="text" class="form-control" id="withdraw_market_address" required>
+        </div>
+        <div class="form-group">
+          <label for="withdraw_address">Your Address:</label>
+          <input type="text" class="form-control" id="withdraw_address" required>
+        </div>
+        <div class="form-group">
+          <label for="withdraw_private_key">Your Private Key:</label>
+          <input type="text" class="form-control" id="withdraw_private_key" required>
+        </div>
+        <button type="submit" class="btn btn-info">Withdraw</button>
+      </form>
+      <div id="action-result"></div>
+    </section>
+  </div>
+
+  <script>
+    // Set the API base to include the /api prefix
+    const apiBase = '/api';
+
+    // Deploy Market
+    document.getElementById('deploy-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const question = document.getElementById('question').value;
+      const deployer_address = document.getElementById('deployer_address').value;
+      const deployer_private_key = document.getElementById('deployer_private_key').value;
+
+      const response = await fetch(apiBase + '/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, deployer_address, private_key: deployer_private_key })
+      });
+      const data = await response.json();
+      document.getElementById('deploy-result').innerText = JSON.stringify(data, null, 2);
+      loadMarkets();
+    });
+
+    // Load Markets
+    async function loadMarkets() {
+      const response = await fetch(apiBase + '/markets');
+      const markets = await response.json();
+      const tbody = document.getElementById('markets-table-body');
+      tbody.innerHTML = '';
+      if (Array.isArray(markets)) {
+        markets.forEach(market => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${market.contract_address}</td>
+            <td>${market.question}</td>
+            <td>${market.betsOpen}</td>
+            <td>${market.resolved}</td>
+            <td>${market.totalYes}</td>
+            <td>${market.totalNo}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="fillMarketAddress('${market.contract_address}')">Select</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="7">No markets available</td></tr>';
+      }
+    }
+
+    document.getElementById('refresh-markets').addEventListener('click', loadMarkets);
+
+    function fillMarketAddress(address) {
+      document.getElementById('bet_market_address').value = address;
+      document.getElementById('close_market_address').value = address;
+      document.getElementById('resolve_market_address').value = address;
+      document.getElementById('withdraw_market_address').value = address;
+    }
+
+    // Place Bet
+    document.getElementById('bet-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const market_address = document.getElementById('bet_market_address').value;
+      const vote = document.getElementById('vote').value.toLowerCase() === 'true';
+      const amount_wei = parseInt(document.getElementById('amount_wei').value);
+      const voter_address = document.getElementById('voter_address').value;
+      const voter_private_key = document.getElementById('voter_private_key').value;
+      const response = await fetch(apiBase + '/bet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ market_address, vote, amount_wei, voter_address, private_key: voter_private_key })
+      });
+      const data = await response.json();
+      document.getElementById('action-result').innerText = JSON.stringify(data, null, 2);
+      loadMarkets();
+    });
+
+    // Close Bets
+    document.getElementById('close-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const market_address = document.getElementById('close_market_address').value;
+      const address = document.getElementById('owner_address_close').value;
+      const private_key = document.getElementById('owner_private_key_close').value;
+      const response = await fetch(apiBase + '/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ market_address, address, private_key })
+      });
+      const data = await response.json();
+      document.getElementById('action-result').innerText = JSON.stringify(data, null, 2);
+      loadMarkets();
+    });
+
+    // Resolve Market
+    document.getElementById('resolve-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const market_address = document.getElementById('resolve_market_address').value;
+      const outcome = document.getElementById('outcome').value.toLowerCase() === 'true';
+      const owner_address = document.getElementById('owner_address_resolve').value;
+      const private_key = document.getElementById('owner_private_key_resolve').value;
+      const response = await fetch(apiBase + '/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ market_address, outcome, owner_address, private_key })
+      });
+      const data = await response.json();
+      document.getElementById('action-result').innerText = JSON.stringify(data, null, 2);
+      loadMarkets();
+    });
+
+    // Withdraw
+    document.getElementById('withdraw-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const market_address = document.getElementById('withdraw_market_address').value;
+      const address = document.getElementById('withdraw_address').value;
+      const private_key = document.getElementById('withdraw_private_key').value;
+      const response = await fetch(apiBase + '/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ market_address, address, private_key })
+      });
+      const data = await response.json();
+      document.getElementById('action-result').innerText = JSON.stringify(data, null, 2);
+      loadMarkets();
+    });
+
+    // Initial load of markets.
+    loadMarkets();
+  </script>
+</body>
+</html>
